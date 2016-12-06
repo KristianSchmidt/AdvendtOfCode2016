@@ -52,6 +52,7 @@
     <None Include="Day2.fsx" />
     <None Include="Day3.fsx" />
     <None Include="Day4.fsx" />
+    <None Include="Day5.fsx" />
     <None Include="App.config" />
   </ItemGroup>
   <PropertyGroup>
