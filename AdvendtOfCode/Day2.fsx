@@ -1,7 +1,7 @@
 ﻿open System
 open System.IO
 
-let inputPath = @"C:\Users\Kristian\Documents\Visual Studio 2015\Projects\AdvendtOfCode\AdvendtOfCode\day2.txt"
+let inputPath = Path.Combine(__SOURCE_DIRECTORY__,  @"day2.txt")
 
 let nextMove pos move =
     match pos, move with

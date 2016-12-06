@@ -1,7 +1,7 @@
 ﻿open System
 open System.IO
 
-let inputPath = @"C:\Users\Kristian\Documents\Visual Studio 2015\Projects\AdvendtOfCode\AdvendtOfCode\day3.txt"
+let inputPath = Path.Combine(__SOURCE_DIRECTORY__,  @"day3.txt")
 
 File.ReadAllLines(inputPath)
 |> Array.map (fun s -> s.Split(' ') |> Array.filter ((<>)"") |> Array.map int |> Array.sort)
