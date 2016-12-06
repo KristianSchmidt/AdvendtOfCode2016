@@ -49,6 +49,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
+    <None Include="Day2.fsx" />
+    <None Include="Day3.fsx" />
+    <None Include="Day4.fsx" />
     <None Include="App.config" />
   </ItemGroup>
   <PropertyGroup>
