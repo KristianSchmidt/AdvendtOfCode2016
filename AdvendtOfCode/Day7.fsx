@@ -36,14 +36,10 @@ let findAba (s : string) =
     s.ToCharArray()
     |> Array.windowed 3
     |> Array.filter (fun arr -> arr.[0] = arr.[2] && arr.[0] <> arr.[1])
-
+    
 let abaToBab (aba : char array) =
-    let bab = aba |> Array.map id // clone array
-    let middle = bab.[1]
-    let outer = bab.[0]
-    bab.[0] <- middle
-    bab.[1] <- outer
-    bab.[2] <- middle
+    let bab = Array.replicate 3 aba.[1]
+    bab.[1] <- aba.[0]
     bab
 
 let containsCorrespondingBab (aba : char array) (s : string) =
