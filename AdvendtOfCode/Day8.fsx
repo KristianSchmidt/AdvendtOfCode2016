@@ -83,7 +83,21 @@ let elements =
                 yield ScreenElement (x, y, false)
     }
 
-instructions
-|> Seq.fold fInstruction elements
-|> Seq.filter (fun (ScreenElement (_,_,on)) -> on)
-|> Seq.length
+let finalState =
+    instructions
+    |> Seq.fold fInstruction elements
+    
+finalState |> Seq.filter (fun (ScreenElement (_,_,on)) -> on) |> Seq.length
+
+/// PART 2
+
+let rowToString elems row =
+    elems
+    |> Seq.filter (fun (ScreenElement (x,y,on)) -> y = row)
+    |> Seq.sortBy (fun (ScreenElement (x,y,on)) -> x)
+    |> Seq.map (fun (ScreenElement (x,y,on)) -> if (on) then "#" else " ")
+    |> (fun s -> String.Join("", s))
+
+[ 0 .. 5 ]
+|> List.map (rowToString finalState)
+|> (fun s -> "\r\n" + String.Join("\r\n", s))
