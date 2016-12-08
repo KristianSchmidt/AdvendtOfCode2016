@@ -29,5 +29,61 @@ let parseInstruction (s : string) =
       RotateColumn, rotateColumn ]
     |> List.pick (fun (f, regex) -> convertRegex regex s f)
 
-File.ReadAllLines(inputPath)
-|> Array.map parseInstruction
+let instructions =
+    File.ReadAllLines(inputPath)
+    |> Array.map parseInstruction
+
+type ScreenElement = | ScreenElement of x : int * y : int * on : bool
+
+let applyRect wide tall elems =
+    let f (ScreenElement (x,y,_) as e) =
+        if (x < wide && y < tall) then
+            ScreenElement (x,y,true)
+        else
+            e
+    
+    elems
+    |> Seq.map f
+
+let applyRotateRow row pixels totalWidth elems =
+    let f (ScreenElement (x,y,on) as e) =
+        if (y = row) then
+            ScreenElement ((x + pixels) % totalWidth, y, on)
+        else
+            e
+
+    elems
+    |> Seq.map f
+
+let applyRotateColumn col pixels totalHeight elems =
+    let f (ScreenElement (x,y,on) as e) =
+        if (x = col) then
+            ScreenElement (x, (y + pixels) % totalHeight, on)
+        else
+            e
+
+    elems
+    |> Seq.map f
+
+let applyInstruction totalWidth totalHeight elems inst =
+    match inst with
+    | Rect (wide, tall) -> applyRect wide tall elems
+    | RotateRow (row, pixels) -> applyRotateRow row pixels totalWidth elems
+    | RotateColumn (column, pixels) -> applyRotateColumn column pixels totalHeight elems
+
+let inputWidth = 50
+let inputHeight = 6
+
+let fInstruction elems inst = applyInstruction inputWidth inputHeight elems inst
+
+let elements =
+    seq {
+        for x in 0 .. inputWidth - 1 do
+            for y in 0 .. inputHeight - 1 do
+                yield ScreenElement (x, y, false)
+    }
+
+instructions
+|> Seq.fold fInstruction elements
+|> Seq.filter (fun (ScreenElement (_,_,on)) -> on)
+|> Seq.length
