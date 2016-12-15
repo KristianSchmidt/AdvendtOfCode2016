@@ -67,6 +67,13 @@ let initValues =
 let initState = { Outputs = Map.empty; BotValues = initValues; Instructions = inst }
 
 let step (s : State) =
-    s.BotValues |> Map.filter hasTwoValues
+    // Skal bruge:
+    // Bots som har 2 værdier
+    // Deres instruktioner
+    // Hvilke bots der så får en værdi tilført
+    // Gamle værdier skal slettes, og de nye skal have deres værdi tilføjet
+
+    // lav funktion der kun kører een bot frem
+    s.BotValues |> Map.filter (fun _ v -> hasTwoValues v)
 
 step initState
