@@ -11,6 +11,12 @@ type Instructions = { Low : Entity; High : Entity }
 
 type BotValues = | NoValues | OneValue of int | TwoValues of int*int
 
+let addValue i =
+    function
+    | NoValues -> OneValue i
+    | OneValue i' -> TwoValues (i,i')
+    | TwoValues _ -> failwith "cannot add to twovalues"
+
 let hasTwoValues =
     function
     | TwoValues _ -> true
@@ -38,7 +44,7 @@ let parseInstruction (s : string) =
         let lowNum = m.Groups.[3].Value |> int
         let highEntity = m.Groups.[4].Value
         let highNum = m.Groups.[5].Value |> int 
-        botNum, { Low = parseEntity lowEntity highNum; High = parseEntity highEntity highNum }
+        botNum, { Low = parseEntity lowEntity lowNum; High = parseEntity highEntity highNum }
     | false ->
         failwithf "Failed parsing instructions for; %s" s
 
@@ -67,13 +73,32 @@ let initValues =
 let initState = { Outputs = Map.empty; BotValues = initValues; Instructions = inst }
 
 let step (s : State) =
-    // Skal bruge:
-    // Bots som har 2 værdier
-    // Deres instruktioner
-    // Hvilke bots der så får en værdi tilført
-    // Gamle værdier skal slettes, og de nye skal have deres værdi tilføjet
+    let botsToGive = s.BotValues |> Map.filter (fun _ v -> hasTwoValues v) |> Map.toArray |> Array.map fst
 
-    // lav funktion der kun kører een bot frem
-    s.BotValues |> Map.filter (fun _ v -> hasTwoValues v)
+    let processOneBot (s : State) botNum =
+        let inst = s.Instructions |> Map.find botNum
+        let valLow,valHigh = s.BotValues |> Map.find botNum |> (function | TwoValues (i,j) -> min i j, max i j | _ -> failwith ".")
+        
+        if (valLow = 17 && valHigh = 61) then
+            printfn "bot %i" botNum
+        let processInstruction recipient value state =
+            match recipient with
+            | Bot i ->
+                let currVal = defaultArg (state.BotValues |> Map.tryFind i) NoValues
+                let newVal = currVal |> addValue value
+                { state with BotValues = state.BotValues |> Map.add i newVal }
+            | Output i ->
+                // PART 2
+                if (i <= 2) then
+                    printfn "Bucket %i: %i" i value
+                { state with Outputs = state.Outputs |> Map.add i value}
+        
+        let addedState = s |> processInstruction inst.Low valLow |> processInstruction inst.High valHigh
+        { addedState with BotValues = addedState.BotValues |> Map.remove botNum }
+        
+    botsToGive
+    |> Array.fold processOneBot s
 
-step initState
+// Step through enough times to get the answer printed
+[| 1 .. 100 |]
+|> Array.fold (fun s _ -> step s) initState
